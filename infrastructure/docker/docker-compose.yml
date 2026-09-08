@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  astraxis-dashboard:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile
+    container_name: astraxis-ui-dashboard
+    restart: unless-stopped
+    ports:
+      - "8501:8501"
+    environment:
+      - ASTRAXIS_ENVIRONMENT=production
+      - ASTRAXIS_LOG_LEVEL=INFO
+      - ASTRAXIS_ENABLE_DOCKER_SANDBOX=false
+    volumes:
+      - astraxis-audit-reports:/app/reports
+    networks:
+      - astraxis-network
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: astraxis-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - astraxis-network
+
+volumes:
+  astraxis-audit-reports:
+  redis-data:
+
+networks:
+  astraxis-network:
+    driver: bridge

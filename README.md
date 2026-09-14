@@ -123,6 +123,13 @@ All 25 tests execute in isolated synthetic mode without reading any environment 
 
 ---
 
+## Author & Maintainer
+
+**Rohit** ([@Rohittt619](https://github.com/Rohittt619))  
+*Autonomous AI Security Research & Sandbox Infrastructure*
+
+---
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

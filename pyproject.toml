@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [
-    {name = "ASTRAXIS Core Contributors"}
+    {name = "Rohit", email = "rohittt619@github.com"}
 ]
 keywords = [
     "ai-red-teaming",
